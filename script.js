@@ -1,7 +1,7 @@
 // --- 1. Inisialisasi dan Pengambilan Elemen HTML ---
 document.addEventListener('DOMContentLoaded', () => {
     // Pengaturan Game
-    const IMAGE_SRC = 'Bupati Kupang.jpeg'; // GANTI NAMA FILE GAMBAR ANDA DI SINI
+    const IMAGE_SRC = 'Bupati-Kupang.jpeg'; // GANTI NAMA FILE GAMBAR ANDA DI SINI
     const PUZZLE_ROWS = 3;
     const PUZZLE_COLS = 4;
 
