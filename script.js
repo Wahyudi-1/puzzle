@@ -1,11 +1,10 @@
-// Ganti event listener dari DOMContentLoaded menjadi window.onload
 window.onload = function() {
     // --- 1. Inisialisasi dan Pengambilan Elemen HTML ---
 
     // Pengaturan Game
-    const IMAGE_SRC = 'bupatikupang.jpeg'; // PASTIKAN NAMA FILE INI BENAR
-    const PUZZLE_ROWS = 3;
-    const PUZZLE_COLS = 4;
+    const IMAGE_SRC = 'bupatikupang.jpeg'; // PASTIKAN NAMA FILE GAMBAR ANDA BENAR
+    const PUZZLE_ROWS = 4; // Diubah menjadi 4
+    const PUZZLE_COLS = 4; // Diubah menjadi 4
 
     // Elemen-elemen dari HTML
     const puzzleBoard = document.getElementById('puzzle-board');
@@ -17,7 +16,6 @@ window.onload = function() {
     const winModal = document.getElementById('win-modal');
 
     // Variabel Status Game
-    let pieces = [];
     let moves = 0;
     let timerInterval;
     let seconds = 0;
@@ -48,6 +46,8 @@ window.onload = function() {
         winModal.style.display = 'none';
     }
 
+    // Fungsi sliceImage ini sudah benar, tidak perlu diubah.
+    // Ia memotong gambar sumber secara matematis dan presisi.
     function sliceImage(imageUrl) {
         return new Promise((resolve, reject) => {
             const image = new Image();
@@ -72,37 +72,49 @@ window.onload = function() {
         });
     }
 
+    // **FUNGSI BARU YANG LEBIH AKURAT**
     function setupPuzzle(pieceImages) {
+        // 1. Atur layout grid pada papan terlebih dahulu
         puzzleBoard.style.gridTemplateColumns = `repeat(${PUZZLE_COLS}, 1fr)`;
         puzzleBoard.style.gridTemplateRows = `repeat(${PUZZLE_ROWS}, 1fr)`;
 
-        const shuffledPieces = pieceImages
-            .map((img, index) => ({ img, originalIndex: index }))
-            .sort(() => Math.random() - 0.5);
-
+        // 2. Buat semua slot di papan
         for (let i = 0; i < PUZZLE_ROWS * PUZZLE_COLS; i++) {
             const slot = document.createElement('div');
             slot.classList.add('slot');
             slot.dataset.index = i;
             puzzleBoard.appendChild(slot);
-            addDropListeners(slot);
+            addDropListeners(slot); // Tambahkan listener drop ke slot
+        }
 
+        // 3. SEKARANG, setelah papan dan slotnya ada di halaman, kita ukur ukurannya
+        const slotWidth = puzzleBoard.querySelector('.slot').clientWidth;
+        const slotHeight = puzzleBoard.querySelector('.slot').clientHeight;
+
+        // 4. Acak urutan kepingan
+        const shuffledPieces = pieceImages
+            .map((img, index) => ({ img, originalIndex: index }))
+            .sort(() => Math.random() - 0.5);
+
+        // 5. Buat elemen kepingan puzzle dengan ukuran yang sudah pasti
+        shuffledPieces.forEach(item => {
             const piece = document.createElement('div');
             piece.classList.add('puzzle-piece');
-            piece.style.backgroundImage = `url(${shuffledPieces[i].img})`;
+            piece.style.backgroundImage = `url(${item.img})`;
             
-            // Ukuran kepingan dihitung berdasarkan ukuran papan yang sudah dirender dengan benar
-            piece.style.width = `${puzzleBoard.clientWidth / PUZZLE_COLS}px`;
-            piece.style.height = `${puzzleBoard.clientHeight / PUZZLE_ROWS}px`;
+            // Gunakan ukuran slot yang sudah diukur untuk semua kepingan
+            piece.style.width = `${slotWidth}px`;
+            piece.style.height = `${slotHeight}px`;
 
             piece.draggable = true;
-            piece.dataset.index = shuffledPieces[i].originalIndex;
+            piece.dataset.index = item.originalIndex; // Simpan index asli untuk pengecekan
             pieceContainer.appendChild(piece);
-            addDragListeners(piece);
-        }
+            addDragListeners(piece); // Tambahkan listener drag ke kepingan
+        });
     }
 
-    // --- 3. Logika Drag and Drop ---
+
+    // --- 3. Logika Drag and Drop (Tidak Berubah) ---
     function addDragListeners(piece) {
         piece.addEventListener('dragstart', (e) => {
             draggedPiece = e.target;
@@ -128,7 +140,7 @@ window.onload = function() {
         });
     }
 
-    // --- 4. Logika Timer dan Kemenangan ---
+    // --- 4. Logika Timer dan Kemenangan (Tidak Berubah) ---
     function startTimer() {
         timerInterval = setInterval(() => {
             seconds++;
@@ -156,7 +168,7 @@ window.onload = function() {
         }
     }
 
-    // --- 5. Event Listeners untuk Tombol ---
+    // --- 5. Event Listeners untuk Tombol (Tidak Berubah) ---
     restartBtn.addEventListener('click', initGame);
     playAgainBtn.addEventListener('click', initGame);
 
