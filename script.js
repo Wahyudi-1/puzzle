@@ -3,7 +3,7 @@ window.onload = function() {
     // --- 1. Inisialisasi dan Pengambilan Elemen HTML ---
 
     // Pengaturan Game
-    const IMAGE_SRC = 'bupati-kupang.jpeg'; // PASTIKAN NAMA FILE INI BENAR
+    const IMAGE_SRC = 'bupatikupang.jpeg'; // PASTIKAN NAMA FILE INI BENAR
     const PUZZLE_ROWS = 3;
     const PUZZLE_COLS = 4;
 
