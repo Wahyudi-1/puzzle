@@ -1,7 +1,9 @@
-// --- 1. Inisialisasi dan Pengambilan Elemen HTML ---
-document.addEventListener('DOMContentLoaded', () => {
+// Ganti event listener dari DOMContentLoaded menjadi window.onload
+window.onload = function() {
+    // --- 1. Inisialisasi dan Pengambilan Elemen HTML ---
+
     // Pengaturan Game
-    const IMAGE_SRC = 'bupatikupang.jpeg'; // GANTI NAMA FILE GAMBAR ANDA DI SINI
+    const IMAGE_SRC = 'bupati-kupang.jpeg'; // PASTIKAN NAMA FILE INI BENAR
     const PUZZLE_ROWS = 3;
     const PUZZLE_COLS = 4;
 
@@ -23,12 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. Logika Utama Permainan ---
 
-    // Fungsi untuk memulai atau me-reset permainan
     async function initGame() {
-        // Reset status
         resetStatus();
-        
-        // Buat kepingan puzzle dari gambar
         try {
             const pieceImages = await sliceImage(IMAGE_SRC);
             setupPuzzle(pieceImages);
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Fungsi untuk me-reset status permainan
     function resetStatus() {
         moves = 0;
         seconds = 0;
@@ -51,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         winModal.style.display = 'none';
     }
 
-    // Fungsi untuk memotong gambar menggunakan Canvas
     function sliceImage(imageUrl) {
         return new Promise((resolve, reject) => {
             const image = new Image();
@@ -60,23 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pieceWidth = image.width / PUZZLE_COLS;
                 const pieceHeight = image.height / PUZZLE_ROWS;
                 const pieceDataUrls = [];
-
                 for (let r = 0; r < PUZZLE_ROWS; r++) {
                     for (let c = 0; c < PUZZLE_COLS; c++) {
                         const canvas = document.createElement('canvas');
                         canvas.width = pieceWidth;
                         canvas.height = pieceHeight;
                         const context = canvas.getContext('2d');
-                        
-                        // 'drawImage' memotong bagian dari gambar sumber
-                        context.drawImage(
-                            image,
-                            c * pieceWidth, r * pieceHeight, // Posisi X dan Y pada gambar sumber
-                            pieceWidth, pieceHeight,         // Lebar dan tinggi potongan
-                            0, 0,                             // Posisi X dan Y untuk menggambar di canvas
-                            pieceWidth, pieceHeight
-                        );
-                        // Simpan gambar potongan sebagai URL
+                        context.drawImage(image, c * pieceWidth, r * pieceHeight, pieceWidth, pieceHeight, 0, 0, pieceWidth, pieceHeight);
                         pieceDataUrls.push(canvas.toDataURL());
                     }
                 }
@@ -86,48 +72,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fungsi untuk menyiapkan papan dan kepingan puzzle
     function setupPuzzle(pieceImages) {
-        // Acak urutan kepingan
+        puzzleBoard.style.gridTemplateColumns = `repeat(${PUZZLE_COLS}, 1fr)`;
+        puzzleBoard.style.gridTemplateRows = `repeat(${PUZZLE_ROWS}, 1fr)`;
+
         const shuffledPieces = pieceImages
             .map((img, index) => ({ img, originalIndex: index }))
             .sort(() => Math.random() - 0.5);
 
-        // Buat slot di papan dan kepingan di kontainer
         for (let i = 0; i < PUZZLE_ROWS * PUZZLE_COLS; i++) {
-            // Buat slot di papan target
             const slot = document.createElement('div');
             slot.classList.add('slot');
-            slot.dataset.index = i; // Beri index untuk validasi kemenangan
+            slot.dataset.index = i;
             puzzleBoard.appendChild(slot);
             addDropListeners(slot);
 
-            // Buat kepingan puzzle
             const piece = document.createElement('div');
             piece.classList.add('puzzle-piece');
             piece.style.backgroundImage = `url(${shuffledPieces[i].img})`;
-            piece.style.width = `${puzzleBoard.clientWidth / PUZZLE_COLS - 4}px`; // -4 untuk gap dan border
-            piece.style.height = `${puzzleBoard.clientHeight / PUZZLE_ROWS - 4}px`;
+            
+            // Ukuran kepingan dihitung berdasarkan ukuran papan yang sudah dirender dengan benar
+            piece.style.width = `${puzzleBoard.clientWidth / PUZZLE_COLS}px`;
+            piece.style.height = `${puzzleBoard.clientHeight / PUZZLE_ROWS}px`;
+
             piece.draggable = true;
-            piece.dataset.index = shuffledPieces[i].originalIndex; // Simpan index aslinya
+            piece.dataset.index = shuffledPieces[i].originalIndex;
             pieceContainer.appendChild(piece);
             addDragListeners(piece);
         }
-        
-        // Atur grid layout pada papan
-        puzzleBoard.style.gridTemplateColumns = `repeat(${PUZZLE_COLS}, 1fr)`;
-        puzzleBoard.style.gridTemplateRows = `repeat(${PUZZLE_ROWS}, 1fr)`;
     }
 
-
     // --- 3. Logika Drag and Drop ---
-
     function addDragListeners(piece) {
         piece.addEventListener('dragstart', (e) => {
             draggedPiece = e.target;
             setTimeout(() => e.target.classList.add('dragging'), 0);
         });
-
         piece.addEventListener('dragend', (e) => {
             e.target.classList.remove('dragging');
         });
@@ -135,9 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addDropListeners(slot) {
         slot.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Wajib agar event 'drop' bisa berjalan
+            e.preventDefault();
         });
-
         slot.addEventListener('drop', (e) => {
             e.preventDefault();
             if (e.target.classList.contains('slot') && !e.target.hasChildNodes()) {
@@ -150,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 4. Logika Timer dan Kemenangan ---
-
     function startTimer() {
         timerInterval = setInterval(() => {
             seconds++;
@@ -165,13 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let isWin = true;
         for (const slot of slots) {
             const piece = slot.querySelector('.puzzle-piece');
-            // Cek jika slot kosong ATAU index kepingan tidak cocok dengan index slot
             if (!piece || piece.dataset.index !== slot.dataset.index) {
                 isWin = false;
                 break;
             }
         }
-
         if (isWin) {
             clearInterval(timerInterval);
             document.getElementById('final-time').textContent = timerEl.textContent;
@@ -186,4 +162,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Mulai Permainan ---
     initGame();
-});
+};
