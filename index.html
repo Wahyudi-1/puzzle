@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permainan Puzzle Interaktif</title>
+    
+    <!-- Tautan ke file CSS yang akan kita buat nanti -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Tautan ke file JavaScript. 'defer' memastikan skrip berjalan setelah HTML dimuat penuh -->
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <!-- Header Sederhana untuk Judul Permainan -->
+    <header>
+        <h1>Permainan Puzzle Sederhana</h1>
+    </header>
+
+    <!-- Kontainer Utama yang Membungkus Seluruh Area Permainan -->
+    <main id="game-container">
+        
+        <!-- Area Status: Menampilkan Timer, Jumlah Gerakan, dan Tombol Reset -->
+        <div id="status-bar">
+            <div class="status-item">
+                Waktu: <span id="timer">00:00</span>
+            </div>
+            <div class="status-item">
+                Gerakan: <span id="move-count">0</span>
+            </div>
+            <button id="restart-btn">Ulangi</button>
+        </div>
+
+        <!-- Area Puzzle: Terdiri dari Papan Target dan Tempat Kepingan Acak -->
+        <div id="puzzle-area">
+            
+            <!-- Papan Target: Tempat pengguna akan menyusun puzzle -->
+            <div id="puzzle-board">
+                <!-- Slot-slot untuk kepingan puzzle akan dibuat oleh JavaScript di sini -->
+            </div>
+
+            <!-- Tempat Kepingan: Di sini kepingan yang sudah diacak akan ditampilkan -->
+            <div id="piece-container">
+                <!-- Kepingan-kepingan puzzle akan dibuat oleh JavaScript di sini -->
+            </div>
+            
+        </div>
+
+    </main>
+
+    <!-- Layar Kemenangan (Modal/Popup): Awalnya disembunyikan -->
+    <div id="win-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Selamat! 🎉</h2>
+            <p>Anda berhasil menyelesaikan puzzle!</p>
+            <p>Waktu Anda: <span id="final-time"></span></p>
+            <p>Total Gerakan: <span id="final-moves"></span></p>
+            <button id="play-again-btn">Main Lagi</button>
+        </div>
+    </div>
+
+</body>
+</html>
